@@ -22,3 +22,7 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Next.js writes these on dev start; disabled via agentRules in next.config
+AGENTS.md
+CLAUDE.md

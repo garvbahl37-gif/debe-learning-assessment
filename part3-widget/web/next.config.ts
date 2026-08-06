@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@debe/shared"],
 
   typedRoutes: true,
+
+  // `next dev` otherwise writes AGENTS.md / CLAUDE.md into the app directory on
+  // every start. Useful in a working repo; just noise in a submission.
+  agentRules: false,
 };
 
 export default nextConfig;
