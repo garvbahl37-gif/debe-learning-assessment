@@ -115,6 +115,44 @@ export function isValidTimeZone(timeZone: string): boolean {
   }
 }
 
+/**
+ * Would these two zones render every time identically?
+ *
+ * Not the same question as `a === b`, and the difference is a bug I shipped
+ * into a screenshot. The IANA database carries decades of aliases:
+ * `Asia/Calcutta` and `Asia/Kolkata` are one zone under two names, as are
+ * `Europe/Kiev`/`Europe/Kyiv` and `America/Buenos_Aires`/
+ * `America/Argentina/Buenos_Aires`. Chrome still reports the legacy name from
+ * `resolvedOptions().timeZone` for some of them, so a string comparison told a
+ * parent in India that their device was in a different timezone from their
+ * account and offered to "fix" it.
+ *
+ * Comparing offsets across the year instead of maintaining an alias table:
+ * the table would need updating whenever IANA renames something, and the
+ * question the UI actually wants answered is "would the times on screen
+ * change?" — which is exactly what this measures. Two genuinely distinct zones
+ * that happen to agree all year (London and Dublin, say) are correctly treated
+ * as interchangeable here, because for display purposes they are.
+ *
+ * Four samples spread across the year catch northern and southern DST as well
+ * as zones that shift only briefly.
+ */
+export function zonesRenderIdentically(
+  a: TimeZoneId,
+  b: TimeZoneId,
+  referenceMs: number = Date.UTC(2026, 0, 1),
+): boolean {
+  if (a === b) return true;
+  if (!isValidTimeZone(a) || !isValidTimeZone(b)) return false;
+
+  const QUARTER_MS = 91 * DAY_MS;
+  for (let quarter = 0; quarter < 4; quarter += 1) {
+    const instant = new Date(referenceMs + quarter * QUARTER_MS);
+    if (zoneOffsetMsAt(instant, a) !== zoneOffsetMsAt(instant, b)) return false;
+  }
+  return true;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Zone offsets, via Intl
 // ─────────────────────────────────────────────────────────────────────────────

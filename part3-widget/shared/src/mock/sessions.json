@@ -6,7 +6,8 @@
     "subject": "Mathematics — Year 9",
     "teacherId": "tea_okafor",
     "teacherName": "Chidinma Okafor",
-    "startsInHours": 1.5,
+    "earliestInHours": 1.5,
+    "localTime": "16:00",
     "durationMinutes": 60,
     "status": "confirmed"
   },
@@ -17,7 +18,8 @@
     "subject": "Physics — Waves & Optics",
     "teacherId": "tea_mensah",
     "teacherName": "Kwabena Mensah",
-    "startsInHours": 26,
+    "earliestInHours": 20,
+    "localTime": "17:30",
     "durationMinutes": 45,
     "status": "confirmed"
   },
@@ -28,7 +30,8 @@
     "subject": "English Literature — Essay technique",
     "teacherId": "tea_adeyemi",
     "teacherName": "Folasade Adeyemi",
-    "startsInHours": 74,
+    "earliestInHours": 60,
+    "localTime": "18:30",
     "durationMinutes": 60,
     "status": "confirmed"
   },
@@ -39,7 +42,8 @@
     "subject": "Chemistry — Mock exam review",
     "teacherId": "tea_mensah",
     "teacherName": "Kwabena Mensah",
-    "startsInHours": 122,
+    "earliestInHours": 110,
+    "localTime": "10:00",
     "durationMinutes": 90,
     "status": "confirmed"
   }

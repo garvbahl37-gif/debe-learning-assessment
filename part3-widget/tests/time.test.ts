@@ -14,6 +14,7 @@ import {
   utcToWallClock,
   wallClockToUtc,
   zoneOffsetMsAt,
+  zonesRenderIdentically,
 } from "@debe/shared";
 
 const HOUR = 3_600_000;
@@ -168,6 +169,47 @@ describe("wallClockToUtc — DST edges", () => {
   it("rejects a malformed reading", () => {
     expect(() => wallClockToUtc("8 August, 3pm", "Asia/Kolkata")).toThrow(
       TimeParseError,
+    );
+  });
+});
+
+describe("zonesRenderIdentically", () => {
+  it("treats a legacy IANA alias as the same zone", () => {
+    // The bug this exists for: Chrome reports `Asia/Calcutta` from
+    // resolvedOptions() for a device set to `Asia/Kolkata`. A string comparison
+    // then told a parent in India their device was somewhere else and offered
+    // to switch them from their timezone to their timezone.
+    expect(zonesRenderIdentically("Asia/Kolkata", "Asia/Calcutta")).toBe(true);
+    expect(zonesRenderIdentically("Europe/Kyiv", "Europe/Kiev")).toBe(true);
+    expect(
+      zonesRenderIdentically(
+        "America/Argentina/Buenos_Aires",
+        "America/Buenos_Aires",
+      ),
+    ).toBe(true);
+  });
+
+  it("still separates zones that genuinely differ", () => {
+    expect(zonesRenderIdentically("Asia/Kolkata", "Europe/London")).toBe(false);
+    expect(zonesRenderIdentically("America/New_York", "America/Chicago")).toBe(
+      false,
+    );
+  });
+
+  it("separates zones that share an offset for part of the year but not all of it", () => {
+    // Both are UTC+0 in winter; only London goes to +1 in summer. Sampling a
+    // single instant would call these identical, which is why the check spans
+    // four quarters.
+    expect(zonesRenderIdentically("Europe/London", "UTC")).toBe(false);
+    // Arizona doesn't observe DST; Denver does.
+    expect(
+      zonesRenderIdentically("America/Phoenix", "America/Denver"),
+    ).toBe(false);
+  });
+
+  it("is false rather than throwing for an unknown zone", () => {
+    expect(zonesRenderIdentically("Asia/Kolkata", "Mars/Olympus_Mons")).toBe(
+      false,
     );
   });
 });

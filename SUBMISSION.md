@@ -151,7 +151,7 @@ It also surfaced a bonus find: on `firebase-functions` v6 the bare `from "fireba
 cd part3-widget
 npm install
 npm run dev        # http://localhost:3000
-npm run verify     # typecheck × 3 workspaces + lint + 60 tests
+npm run verify     # typecheck × 3 workspaces + lint + 90 tests
 ```
 
 No Firebase project, no API keys, no `.env`.
@@ -164,7 +164,7 @@ Three npm workspaces, not one app:
 shared/      @debe/shared — imported by BOTH web and functions
 functions/   the real firebase-functions v2 onCall
 web/         Next.js App Router
-tests/       60 tests, no emulator
+tests/       90 tests, no emulator
 ```
 
 The brief asks for shared types between the frontend and the function. Two files that agree today will disagree eventually, so `@debe/shared` is a real package boundary both import — the contract cannot drift without the compiler noticing.
@@ -199,7 +199,7 @@ Locked slots say *why* — in the tooltip, the `aria-label`, and a banner ("4 ti
 
 ### Verification
 
-60 tests, no emulator. The ones that carry weight:
+90 tests, no emulator. The ones that carry weight:
 
 | Test | What it defends |
 |---|---|

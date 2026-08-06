@@ -26,7 +26,8 @@
  * in the reschedule form — do not.
  */
 
-import type { TimeZoneId } from "@debe/shared";
+import { zonesRenderIdentically, type TimeZoneId } from "@debe/shared";
+import { useMemo } from "react";
 
 const ZONE_OPTIONS: readonly TimeZoneId[] = [
   "Asia/Kolkata",
@@ -51,8 +52,30 @@ export function TimeZoneBar({
 }: TimeZoneBarProps) {
   // `detectedTimeZone` is null until mount — nothing derived from the device
   // may appear in the server HTML, or the first paint won't match.
+  //
+  // The comparison is `zonesRenderIdentically`, not `!==`. Chrome reports
+  // `Asia/Calcutta` for a device set to `Asia/Kolkata` — the same zone under a
+  // legacy IANA alias — and a string comparison offered an Indian parent the
+  // chance to switch from their timezone to their timezone.
   const mismatch =
-    detectedTimeZone !== null && detectedTimeZone !== viewTimeZone;
+    detectedTimeZone !== null &&
+    !zonesRenderIdentically(detectedTimeZone, viewTimeZone);
+
+  // Same reasoning for the dropdown itself: appending the detected zone by
+  // string identity would list "Asia/Kolkata" and "Asia/Calcutta" as two
+  // choices that do exactly the same thing.
+  const options = useMemo(() => {
+    const list = [...ZONE_OPTIONS];
+    for (const candidate of [viewTimeZone, detectedTimeZone]) {
+      if (
+        typeof candidate === "string" &&
+        !list.some((zone) => zonesRenderIdentically(zone, candidate))
+      ) {
+        list.push(candidate);
+      }
+    }
+    return list;
+  }, [viewTimeZone, detectedTimeZone]);
 
   return (
     <div className="space-y-2">
@@ -69,11 +92,9 @@ export function TimeZoneBar({
           onChange={(event) => onChange(event.target.value)}
           className="rounded-md border border-line bg-surface px-2 py-1 text-[12px] font-medium text-ink"
         >
-          {[...new Set([...ZONE_OPTIONS, viewTimeZone, detectedTimeZone].filter(
-            (zone): zone is string => typeof zone === "string",
-          ))].map((zone) => (
+          {options.map((zone) => (
             <option key={zone} value={zone}>
-              {zone.replace("_", " ")}
+              {zone.replaceAll("_", " ")}
               {zone === profileTimeZone ? " (your account)" : ""}
             </option>
           ))}

@@ -18,7 +18,7 @@ SUBMISSION.md    Parts 1–4, written up
 cd part3-widget
 npm install
 npm run dev        # http://localhost:3000
-npm run verify     # typecheck × 3 workspaces + lint + 60 tests
+npm run verify     # typecheck × 3 workspaces + lint + 90 tests
 ```
 
 **Part 2 — the debugging round.** `prove-bugs` runs `tsc` against both files and asserts that the original fails to compile and the fix does not:

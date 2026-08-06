@@ -7,23 +7,30 @@
  * means implementing one interface — `SessionRepository` — and deleting this
  * file.
  *
- * ── Why the fixture stores offsets, not dates ───────────────────────────────
+ * ── Why the fixture stores no dates ─────────────────────────────────────────
  *
- * `sessions.json` holds `startsInHours` rather than `2026-08-08T13:00:00Z`.
- * A fixture with absolute dates is a demo with a shelf life: it looks right the
- * week you write it and shows four sessions in the past by the time anyone
- * opens it. Offsets keep the widget genuinely demonstrable on any day.
+ * `sessions.json` holds `earliestInHours` and a habitual `localTime`, never
+ * `2026-08-08T13:00:00Z`. A fixture with absolute dates is a demo with a shelf
+ * life: it looks right the week you write it and shows four sessions in the
+ * past by the time anyone opens it.
  *
- * It also lets the fixture make a point. The first session is deliberately
- * 90 minutes out — inside the 2-hour lead-time window — so the lock-out is
- * visible the moment the page loads, rather than something you have to go
- * hunting for.
+ * The pair also keeps the schedule plausible. An offset alone put a Year 9
+ * maths lesson at 00:30 when the portal was opened at midnight; snapping every
+ * offset into the tutoring day then put all four at 08:00, which is no more
+ * convincing. Naming the hour each lesson habitually runs at — see
+ * `nextLocalOccurrence` — is what a real timetable actually looks like.
  */
 
-import { toUtcIso } from "../time";
+import {
+  addDaysToLocalDate,
+  localDateInZone,
+  toUtcIso,
+  wallClockToUtc,
+} from "../time";
 import type {
   ParentProfile,
   RescheduleRequest,
+  TimeZoneId,
   TutoringSession,
 } from "../types";
 import type { SessionRepository } from "../handler";
@@ -39,8 +46,6 @@ export const MOCK_PARENT: ParentProfile = {
   timeZone: "Asia/Kolkata",
 };
 
-const SLOT_GRID_MS = 30 * 60_000;
-
 interface SessionFixture {
   readonly id: string;
   readonly studentId: string;
@@ -48,25 +53,62 @@ interface SessionFixture {
   readonly subject: string;
   readonly teacherId: string;
   readonly teacherName: string;
-  readonly startsInHours: number;
+  readonly earliestInHours: number;
+  readonly localTime: string;
   readonly durationMinutes: number;
   readonly status: string;
 }
 
 /**
- * Turn the offset fixtures into real sessions at real instants.
+ * The next time the family's clock reads `localTime`, at or after `earliestMs`.
  *
- * Times are snapped up to the next half hour so the fixture lands on the same
- * grid the slot picker offers, rather than at 18:47. (Snapping on the UTC grid
- * also lands on the local grid for any zone whose offset is a whole or half
- * hour — which covers everywhere except a handful of :45 zones such as
- * Kathmandu. Acceptable for a fixture; flagged so it isn't mistaken for a
- * guarantee.)
+ * Real tutoring schedules are habitual — the same child has maths at four on a
+ * Friday, week after week. So each fixture names the hour it happens at, and
+ * this walks forward to the next occurrence of it. Two things follow: the
+ * schedule looks like a schedule rather than four lessons all at 08:00, and it
+ * reads sensibly whatever time of day the page is opened.
+ *
+ * Note this resolves against the **local** wall clock, not by adding
+ * milliseconds. Adding 24 hours of elapsed time to a recurring appointment
+ * walks it off its own hour across a DST boundary — "four o'clock on Fridays"
+ * becomes five o'clock for half the year. Resolving the reading fresh each day
+ * is the same reason the slot generator iterates wall clocks.
  */
-export function materialiseSessions(nowMs: number): TutoringSession[] {
+function nextLocalOccurrence(
+  earliestMs: number,
+  localTime: string,
+  timeZone: TimeZoneId,
+): number {
+  let localDate = localDateInZone(earliestMs, timeZone);
+
+  // A fortnight is far more than enough; the guard is only here so a bad
+  // fixture can never spin forever.
+  for (let attempt = 0; attempt < 14; attempt += 1) {
+    const conversion = wallClockToUtc(`${localDate}T${localTime}`, timeZone);
+    const candidateMs = new Date(conversion.utc).getTime();
+    if (candidateMs >= earliestMs) return candidateMs;
+    localDate = addDaysToLocalDate(localDate, 1);
+  }
+
+  throw new Error(
+    `Fixture ${localTime} in ${timeZone} found no slot within a fortnight.`,
+  );
+}
+
+/**
+ * Turn the fixtures into real sessions at real instants.
+ *
+ * `earliestInHours` is the minimum lead; `localTime` is the hour the lesson
+ * habitually runs at. Together they place each session at the next plausible
+ * occurrence, in the family's own timezone.
+ */
+export function materialiseSessions(
+  nowMs: number,
+  timeZone: TimeZoneId = MOCK_PARENT.timeZone,
+): TutoringSession[] {
   return (fixtures as readonly SessionFixture[]).map((fixture) => {
-    const target = nowMs + fixture.startsInHours * 3_600_000;
-    const snapped = Math.ceil(target / SLOT_GRID_MS) * SLOT_GRID_MS;
+    const earliest = nowMs + fixture.earliestInHours * 3_600_000;
+    const startsAt = nextLocalOccurrence(earliest, fixture.localTime, timeZone);
 
     return {
       id: fixture.id,
@@ -75,7 +117,7 @@ export function materialiseSessions(nowMs: number): TutoringSession[] {
       subject: fixture.subject,
       teacherId: fixture.teacherId,
       teacherName: fixture.teacherName,
-      startsAtUtc: toUtcIso(snapped),
+      startsAtUtc: toUtcIso(startsAt),
       durationMinutes: fixture.durationMinutes,
       status: fixture.status as TutoringSession["status"],
     };
