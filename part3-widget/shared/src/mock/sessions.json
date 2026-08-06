@@ -1,0 +1,46 @@
+[
+  {
+    "id": "ses_4f21a",
+    "studentId": "stu_arjun",
+    "studentName": "Arjun",
+    "subject": "Mathematics — Year 9",
+    "teacherId": "tea_okafor",
+    "teacherName": "Chidinma Okafor",
+    "startsInHours": 1.5,
+    "durationMinutes": 60,
+    "status": "confirmed"
+  },
+  {
+    "id": "ses_9c07b",
+    "studentId": "stu_arjun",
+    "studentName": "Arjun",
+    "subject": "Physics — Waves & Optics",
+    "teacherId": "tea_mensah",
+    "teacherName": "Kwabena Mensah",
+    "startsInHours": 26,
+    "durationMinutes": 45,
+    "status": "confirmed"
+  },
+  {
+    "id": "ses_1d83e",
+    "studentId": "stu_arjun",
+    "studentName": "Arjun",
+    "subject": "English Literature — Essay technique",
+    "teacherId": "tea_adeyemi",
+    "teacherName": "Folasade Adeyemi",
+    "startsInHours": 74,
+    "durationMinutes": 60,
+    "status": "confirmed"
+  },
+  {
+    "id": "ses_6a55c",
+    "studentId": "stu_arjun",
+    "studentName": "Arjun",
+    "subject": "Chemistry — Mock exam review",
+    "teacherId": "tea_mensah",
+    "teacherName": "Kwabena Mensah",
+    "startsInHours": 122,
+    "durationMinutes": 90,
+    "status": "confirmed"
+  }
+]
