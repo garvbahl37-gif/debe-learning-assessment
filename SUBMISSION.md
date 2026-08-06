@@ -156,6 +156,25 @@ npm run verify     # typecheck × 3 workspaces + lint + 90 tests
 
 No Firebase project, no API keys, no `.env`.
 
+![A parent's next three tutoring sessions](part3-widget/docs/screenshots/01-upcoming-sessions.png)
+
+![The 2-hour lead-time lock-out](part3-widget/docs/screenshots/02-lead-time-lockout.png)
+
+*The lock-out, viewed in `America/New_York` where it is currently mid-afternoon — so the amber band is real, not staged with a faked clock. Grey = already passed, **amber** = inside the two-hour window, white = bookable.*
+
+![Local time shown, UTC stored](part3-widget/docs/screenshots/03-local-time-and-utc.png)
+
+*The local/UTC split made visible: `17:30 GMT-4` is what the parent picked, `2026-08-06T21:30:00.000Z` is what gets stored. Change the zone and the top line moves while `Stored as` holds.*
+
+<details>
+<summary>Request sent · dark mode · 390px</summary>
+
+![Confirmation after a successful request](part3-widget/docs/screenshots/04-request-sent.png)
+![Dark mode](part3-widget/docs/screenshots/05-dark-mode.png)
+![Narrow viewport](part3-widget/docs/screenshots/06-mobile.png)
+
+</details>
+
 ### Structure
 
 Three npm workspaces, not one app:

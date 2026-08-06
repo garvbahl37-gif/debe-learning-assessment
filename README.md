@@ -10,6 +10,39 @@ part3-widget/    Part 3 — the Session Reschedule Widget
 SUBMISSION.md    Parts 1–4, written up
 ```
 
+## Part 3 — the widget
+
+![A parent's next three tutoring sessions](part3-widget/docs/screenshots/01-upcoming-sessions.png)
+
+Each session stores an **instant**, never a wall clock, and renders in the zone on the parent's account.
+
+![The 2-hour lead-time lock-out](part3-widget/docs/screenshots/02-lead-time-lockout.png)
+
+The lead-time policy, viewed in `America/New_York` where it is currently mid-afternoon — so the amber band is real rather than staged with a faked clock. Grey struck through = already passed. **Amber** = inside the two-hour window. White = bookable. The banner says how many and why, because thirteen dead buttons with no explanation reads as a broken app rather than a policy.
+
+![Local time shown, UTC stored](part3-widget/docs/screenshots/03-local-time-and-utc.png)
+
+The whole local/UTC decision in one panel. `17:30 GMT-4` is what the parent picked; `2026-08-06T21:30:00.000Z` is what gets written. Change the zone dropdown and the top line moves while `Stored as` does not.
+
+<details>
+<summary><b>More</b> — request sent, dark mode, mobile</summary>
+
+![Confirmation after a successful request](part3-widget/docs/screenshots/04-request-sent.png)
+
+The session moves to `reschedule_requested`, not `confirmed` — a tutor has to agree before the slot is actually theirs.
+
+![Dark mode](part3-widget/docs/screenshots/05-dark-mode.png)
+
+Note what is **not** here: the "your device is in another timezone" prompt. The browser reports `Asia/Calcutta` while the account says `Asia/Kolkata` — one zone under a legacy IANA alias. Comparing the strings offered a parent in India the chance to switch from their timezone to their timezone; `zonesRenderIdentically()` compares offsets across the year instead.
+
+![Narrow viewport](part3-widget/docs/screenshots/06-mobile.png)
+
+390px wide, zero horizontal overflow — asserted by the capture script, not eyeballed.
+
+</details>
+
+Full reasoning in [`part3-widget/README.md`](part3-widget/README.md).
+
 ## Running it
 
 **Part 3 — the widget.** No Firebase project, no API keys, no `.env`.
