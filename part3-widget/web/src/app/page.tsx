@@ -23,9 +23,29 @@ import { RescheduleWidget } from "@/components/RescheduleWidget";
 // prerendered at build time or every visitor would see the same frozen clock.
 export const dynamic = "force-dynamic";
 
-export default function ParentPortalPage() {
+/**
+ * Read the request-scoped data.
+ *
+ * Split out of the component rather than inlined, because `Date.now()` is
+ * impure and a component body is supposed to be idempotent — React's lint says
+ * so, and it is right even though a Server Component happens to render once per
+ * request. Loading data in a function and rendering from the result keeps the
+ * component a pure function of its inputs, which is also what makes the clock
+ * injectable everywhere else in this codebase.
+ *
+ * In production this is where the Firestore query goes, and it is already the
+ * right shape for it.
+ */
+async function loadPortal() {
   const nowMs = Date.now();
-  const sessions = getSessionStore().listUpcoming(MOCK_PARENT.id, nowMs, 3);
+  return {
+    nowMs,
+    sessions: getSessionStore().listUpcoming(MOCK_PARENT.id, nowMs, 3),
+  };
+}
+
+export default async function ParentPortalPage() {
+  const { nowMs, sessions } = await loadPortal();
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
