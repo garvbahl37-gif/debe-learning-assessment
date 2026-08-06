@@ -1,0 +1,23 @@
+{
+  "name": "@debe/functions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The requestReschedule Cloud Function. Not deployed for this assessment, but written as the real thing rather than a mock.",
+  "main": "lib/functions/src/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "serve": "npm run build && firebase emulators:start --only functions"
+  },
+  "dependencies": {
+    "@debe/shared": "*",
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^6.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
