@@ -9,8 +9,8 @@ const nextConfig: NextConfig = {
 
   typedRoutes: true,
 
-  // `next dev` otherwise writes AGENTS.md / CLAUDE.md into the app directory on
-  // every start. Useful in a working repo; just noise in a submission.
+  // `next dev` otherwise drops generated tooling markdown into the app
+  // directory on every start. Not wanted in the tree.
   agentRules: false,
 };
 
