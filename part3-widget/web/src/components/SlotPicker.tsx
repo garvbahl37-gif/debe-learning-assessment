@@ -25,10 +25,13 @@
 import {
   LEAD_TIME_LABEL,
   addDaysToLocalDate,
+  firstAvailableLocalDate,
   formatInZone,
   generateDaySlots,
   localDateInZone,
   toUtcIso,
+  whyDayUnavailable,
+  type DayUnavailableReason,
   type SlotBlockedReason,
   type TimeSlot,
   type TimeZoneId,
@@ -42,6 +45,12 @@ const BLOCKED_LABEL: Readonly<Record<SlotBlockedReason, string>> = {
   past: "Already passed",
   "lead-time": `Less than ${LEAD_TIME_LABEL}’ notice`,
   "current-slot": "Current booking",
+};
+
+const UNAVAILABLE_COPY: Readonly<Record<DayUnavailableReason, string>> = {
+  "all-past": "Every slot on this day has already passed.",
+  "all-within-lead-time": `Every remaining slot today is inside the ${LEAD_TIME_LABEL}’ notice your tutor needs to prepare.`,
+  "no-slots": "There are no slots on this day.",
 };
 
 interface SlotPickerProps {
@@ -92,6 +101,23 @@ export function SlotPicker({
   const lockedOutCount = slots.filter(
     (slot) => slot.blockedReason === "lead-time",
   ).length;
+
+  const unavailableReason = whyDayUnavailable(slots);
+
+  // Only searched when the chosen day is empty — scanning ten days of slots on
+  // every clock tick would be wasted work the other 99% of the time.
+  const nextAvailableDate = useMemo(() => {
+    if (!unavailableReason) return null;
+    const found = firstAvailableLocalDate({
+      fromLocalDate: addDaysToLocalDate(activeDate, 1),
+      searchDays: DAYS_VISIBLE,
+      addDays: addDaysToLocalDate,
+      timeZone,
+      nowMs,
+      ...(currentSlotUtc ? { currentSlotUtc } : {}),
+    });
+    return found === activeDate ? null : found;
+  }, [unavailableReason, activeDate, timeZone, nowMs, currentSlotUtc]);
 
   return (
     <div className="space-y-4">
@@ -159,11 +185,7 @@ export function SlotPicker({
           </span>
         </div>
 
-        {slots.length === 0 ? (
-          <p className="rounded-md border border-line bg-sunken px-3 py-6 text-center text-[13px] text-ink-2">
-            No slots on this day.
-          </p>
-        ) : (
+        {slots.length > 0 && (
           <div
             className="grid grid-cols-3 gap-1.5 sm:grid-cols-4"
             role="group"
@@ -181,19 +203,49 @@ export function SlotPicker({
           </div>
         )}
 
-        {lockedOutCount > 0 && (
-          // The lock-out is stated, not just rendered as grey pixels. A parent
-          // looking at a row of dead buttons with no explanation assumes the
-          // app is broken; told the reason, they scroll to tomorrow.
-          <p className="mt-2.5 flex items-start gap-1.5 rounded-md border border-warn-line bg-warn-soft px-2.5 py-2 text-[12px] leading-relaxed text-warn">
-            <LockIcon />
-            <span>
-              <span className="tnum font-semibold">{lockedOutCount}</span>{" "}
-              {lockedOutCount === 1 ? "time is" : "times are"} inside the{" "}
-              {LEAD_TIME_LABEL}’ notice your tutor needs to prepare, so{" "}
-              {lockedOutCount === 1 ? "it" : "they"} can’t be booked.
-            </span>
-          </p>
+        {/*
+          Three states, and they need different copy.
+
+          A day with SOME availability but a few locked slots gets the amber
+          note. A day with NONE gets a full explanation plus somewhere to go —
+          leaving a parent in front of thirteen dead buttons with only "0
+          available" to go on is the version of this screen that generates
+          support tickets.
+        */}
+        {unavailableReason ? (
+          <div className="mt-2.5 rounded-md border border-line bg-surface px-3 py-3">
+            <p className="flex items-start gap-1.5 text-[12px] leading-relaxed text-ink-2">
+              <LockIcon />
+              <span>{UNAVAILABLE_COPY[unavailableReason]}</span>
+            </p>
+            {nextAvailableDate && (
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => onDateChange(nextAvailableDate)}
+                className="mt-2 text-[12px] font-semibold text-accent underline underline-offset-2 disabled:opacity-50"
+              >
+                Jump to {dateLabel(nextAvailableDate, {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                })}
+              </button>
+            )}
+          </div>
+        ) : (
+          lockedOutCount > 0 && (
+            // The lock-out is stated, not just rendered as grey pixels.
+            <p className="mt-2.5 flex items-start gap-1.5 rounded-md border border-warn-line bg-warn-soft px-2.5 py-2 text-[12px] leading-relaxed text-warn">
+              <LockIcon />
+              <span>
+                <span className="tnum font-semibold">{lockedOutCount}</span>{" "}
+                {lockedOutCount === 1 ? "time is" : "times are"} inside the{" "}
+                {LEAD_TIME_LABEL}’ notice your tutor needs to prepare, so{" "}
+                {lockedOutCount === 1 ? "it" : "they"} can’t be booked.
+              </span>
+            </p>
+          )
         )}
       </div>
     </div>

@@ -152,13 +152,56 @@ export function generateDaySlots({
   return slots;
 }
 
-/** `YYYY-MM-DD` labels for the days a parent may browse. */
-export function bookableDays(
-  fromLocalDate: string,
-  count: number,
-  addDays: (date: string, days: number) => string,
-): readonly string[] {
-  return Array.from({ length: count }, (_, index) =>
-    addDays(fromLocalDate, index),
-  );
+/**
+ * Why a whole day has nothing on offer.
+ *
+ * Worth distinguishing, because the two need different copy. "Everything today
+ * has already happened" is obvious once said; "everything left today is inside
+ * the two-hour notice window" is the policy doing its job, and a parent who is
+ * not told that assumes the app is broken. A grid of struck-through buttons
+ * with no explanation is a support ticket.
+ */
+export type DayUnavailableReason =
+  | "all-past"
+  | "all-within-lead-time"
+  | "no-slots";
+
+export function whyDayUnavailable(
+  slots: readonly TimeSlot[],
+): DayUnavailableReason | null {
+  if (slots.some((slot) => slot.selectable)) return null;
+  if (slots.length === 0) return "no-slots";
+  return slots.some((slot) => slot.blockedReason === "lead-time")
+    ? "all-within-lead-time"
+    : "all-past";
+}
+
+export interface FirstAvailableArgs extends Omit<GenerateSlotsArgs, "localDate"> {
+  readonly fromLocalDate: string;
+  readonly searchDays: number;
+  readonly addDays: (localDate: string, days: number) => string;
+}
+
+/**
+ * The first local day, scanning forward, that has at least one bookable slot.
+ *
+ * Used for two things: choosing which day the picker opens on, and offering a
+ * "jump to the next opening" shortcut when the chosen day is empty. Both exist
+ * so the parent is never left staring at a dead grid working out what to do.
+ *
+ * `addDays` is injected rather than imported to keep this module free of a
+ * dependency on `time.ts`'s calendar helpers — the caller already has one.
+ */
+export function firstAvailableLocalDate({
+  fromLocalDate,
+  searchDays,
+  addDays,
+  ...slotArgs
+}: FirstAvailableArgs): string | null {
+  for (let offset = 0; offset < searchDays; offset += 1) {
+    const localDate = addDays(fromLocalDate, offset);
+    const slots = generateDaySlots({ ...slotArgs, localDate });
+    if (slots.some((slot) => slot.selectable)) return localDate;
+  }
+  return null;
 }

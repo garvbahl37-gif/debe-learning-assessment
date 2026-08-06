@@ -10,11 +10,14 @@ import {
   CLOCK_SKEW_GRACE_MS,
   RESCHEDULE_LEAD_TIME_MS,
   SLOT_GRANULARITY_MINUTES,
+  addDaysToLocalDate,
   earliestBookableUtc,
+  firstAvailableLocalDate,
   generateDaySlots,
   isInPast,
   satisfiesLeadTime,
   toUtcIso,
+  whyDayUnavailable,
 } from "@debe/shared";
 
 const MINUTE = 60_000;
@@ -163,6 +166,73 @@ describe("generateDaySlots", () => {
     expect(after?.label).toBe("08:00");
     expect(before?.utc).toBe("2026-03-07T13:00:00.000Z");
     expect(after?.utc).toBe("2026-03-08T12:00:00.000Z");
+  });
+
+  it("distinguishes 'all past' from 'all inside the lead time'", () => {
+    // These need different copy. "Everything today already happened" is
+    // self-explanatory; "everything left is inside the two-hour window" is the
+    // policy working, and a parent not told that assumes the app is broken.
+    const lateAtNight = Date.parse("2026-08-08T18:00:00.000Z"); // 23:30 Kolkata
+    const midMorning = Date.parse("2026-08-08T03:00:00.000Z"); // 08:30 Kolkata
+
+    expect(
+      whyDayUnavailable(
+        generateDaySlots({
+          localDate: "2026-08-08",
+          timeZone: zone,
+          nowMs: lateAtNight,
+        }),
+      ),
+    ).toBe("all-past");
+
+    // At 08:30 the boundary is 10:30, so 09:00–10:00 are lead-time blocked and
+    // the rest of the day is open — not an unavailable day at all.
+    expect(
+      whyDayUnavailable(
+        generateDaySlots({
+          localDate: "2026-08-08",
+          timeZone: zone,
+          nowMs: midMorning,
+        }),
+      ),
+    ).toBe(null);
+
+    // A day with nothing on it at all reports that, rather than guessing.
+    expect(
+      whyDayUnavailable(
+        generateDaySlots({
+          localDate: "2011-12-30",
+          timeZone: "Pacific/Apia",
+          nowMs: Date.parse("2011-12-01T00:00:00Z"),
+        }),
+      ),
+    ).toBe("no-slots");
+  });
+
+  it("finds the next day with an opening when today is exhausted", () => {
+    const lateAtNight = Date.parse("2026-08-08T18:00:00.000Z"); // 23:30 Kolkata
+
+    const next = firstAvailableLocalDate({
+      fromLocalDate: "2026-08-08",
+      searchDays: 10,
+      addDays: addDaysToLocalDate,
+      timeZone: zone,
+      nowMs: lateAtNight,
+    });
+
+    expect(next).toBe("2026-08-09");
+  });
+
+  it("returns the current day when it still has openings", () => {
+    expect(
+      firstAvailableLocalDate({
+        fromLocalDate: "2026-08-08",
+        searchDays: 10,
+        addDays: addDaysToLocalDate,
+        timeZone: zone,
+        nowMs: NOW, // 11:30 Kolkata — the afternoon is still free
+      }),
+    ).toBe("2026-08-08");
   });
 
   it("returns nothing for a calendar day that never happened", () => {

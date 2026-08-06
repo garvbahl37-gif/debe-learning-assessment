@@ -4,7 +4,10 @@ import {
   NOTE_MAX_LENGTH,
   RESCHEDULE_REASONS,
   RESCHEDULE_REASON_LABELS,
+  addDaysToLocalDate,
+  firstAvailableLocalDate,
   formatInZone,
+  generateDaySlots,
   localDateInZone,
   zoneAbbreviation,
   type RescheduleReason,
@@ -40,9 +43,32 @@ export function RescheduleForm({
   onCancel,
   onSubmit,
 }: RescheduleFormProps) {
-  const [activeDate, setActiveDate] = useState(() =>
-    localDateInZone(new Date(session.startsAtUtc).getTime(), timeZone),
-  );
+  // Open on the session's own day — that is the day the parent is thinking
+  // about. But if it has nothing bookable (all past, or all inside the two-hour
+  // window), fall through to the first day that does, rather than presenting a
+  // dead grid and making them hunt.
+  const [activeDate, setActiveDate] = useState(() => {
+    const sessionDay = localDateInZone(
+      new Date(session.startsAtUtc).getTime(),
+      timeZone,
+    );
+    const slotArgs = {
+      timeZone,
+      nowMs,
+      currentSlotUtc: session.startsAtUtc,
+    };
+    if (generateDaySlots({ ...slotArgs, localDate: sessionDay }).some((s) => s.selectable)) {
+      return sessionDay;
+    }
+    return (
+      firstAvailableLocalDate({
+        ...slotArgs,
+        fromLocalDate: localDateInZone(nowMs, timeZone),
+        searchDays: 14,
+        addDays: addDaysToLocalDate,
+      }) ?? sessionDay
+    );
+  });
   const [selected, setSelected] = useState<TimeSlot | null>(null);
   const [reason, setReason] = useState<RescheduleReason>("conflict");
   const [note, setNote] = useState("");
