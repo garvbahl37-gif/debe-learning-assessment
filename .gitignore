@@ -3,7 +3,11 @@ node_modules/
 out/
 build/
 dist/
-lib/
+
+# The Cloud Function's esbuild output. Scoped to the exact path on purpose —
+# a bare `lib/` here also matches web/src/lib/, which silently dropped three
+# source files from the repo and broke a fresh clone.
+part3-widget/functions/lib/
 
 *.log
 npm-debug.log*
