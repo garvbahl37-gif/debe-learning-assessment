@@ -20,14 +20,14 @@
  * hunting for.
  */
 
-import { toUtcIso } from "../time.js";
+import { toUtcIso } from "../time";
 import type {
   ParentProfile,
   RescheduleRequest,
   TutoringSession,
-} from "../types.js";
-import type { SessionRepository } from "../handler.js";
-import fixtures from "./sessions.json" with { type: "json" };
+} from "../types";
+import type { SessionRepository } from "../handler";
+import fixtures from "./sessions.json";
 
 /** The signed-in parent. In production this comes from the auth token. */
 export const MOCK_PARENT: ParentProfile = {

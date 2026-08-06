@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "The requestReschedule Cloud Function. Not deployed for this assessment, but written as the real thing rather than a mock.",
-  "main": "lib/functions/src/index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "//build": "Bundle rather than tsc-emit. @debe/shared is a workspace package that does not exist on the Functions runtime, so a plain tsc build would deploy an import Node cannot resolve — the classic monorepo-to-Firebase failure, and one that only shows up after deploy. esbuild inlines it. firebase-functions and firebase-admin stay external because the runtime provides them.",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=lib/index.js --sourcemap --external:firebase-functions --external:firebase-admin",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "serve": "npm run build && firebase emulators:start --only functions"
   },
@@ -15,6 +16,7 @@
     "firebase-functions": "^6.6.0"
   },
   "devDependencies": {
+    "esbuild": "^0.25.10",
     "typescript": "^5.9.3"
   },
   "engines": {

@@ -32,7 +32,7 @@ import type {
   LocalWallClock,
   TimeZoneId,
   UtcIsoString,
-} from "./types.js";
+} from "./types";
 
 const DAY_MS = 86_400_000;
 

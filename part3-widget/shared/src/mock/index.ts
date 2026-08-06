@@ -5,4 +5,4 @@
  * `@debe/shared` can reach fixture data by accident.
  */
 
-export * from "./store.js";
+export * from "./store";

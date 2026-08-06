@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
+/*
+ * A small, deliberate palette.
+ *
+ * Warm paper rather than pure white, one deep-teal accent, and amber reserved
+ * exclusively for the lead-time lock-out — so the two-hour rule has a colour of
+ * its own and reads as a policy rather than as an error. Red is kept for things
+ * that actually went wrong.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --paper: #fbfaf8;
+  --surface: #ffffff;
+  --sunken: #f4f2ee;
+  --line: #e5e1d9;
+  --line-strong: #cec8bc;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --ink: #16191e;
+  --ink-2: #4c525a;
+  --ink-3: #7d848c;
+
+  --accent: #0e5f52;
+  --accent-hover: #0a4a40;
+  --accent-soft: #e7f2ef;
+  --accent-line: #b9d8d0;
+
+  --warn: #8a5300;
+  --warn-soft: #fdf4e5;
+  --warn-line: #ecd7ac;
+
+  --danger: #9e1f1f;
+  --danger-soft: #fdeded;
+  --danger-line: #f0c4c4;
+
+  --focus: #0e5f52;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0e1013;
+    --surface: #16191e;
+    --sunken: #1c2027;
+    --line: #2a2f37;
+    --line-strong: #3b424c;
+
+    --ink: #eceef1;
+    --ink-2: #a8b0ba;
+    --ink-3: #757d88;
+
+    --accent: #4ec2ab;
+    --accent-hover: #6bd3bf;
+    --accent-soft: #12312c;
+    --accent-line: #235047;
+
+    --warn: #e0a950;
+    --warn-soft: #2c2418;
+    --warn-line: #4d3f26;
+
+    --danger: #ef8f8f;
+    --danger-soft: #2e1a1a;
+    --danger-line: #522c2c;
+
+    --focus: #4ec2ab;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-warn-line: var(--warn-line);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-danger-line: var(--danger-line);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas,
+    monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Times are compared down a column — 08:00, 08:30, 09:00. Proportional digits
+ * make that grid shimmer as the numbers change width, so anything showing a
+ * clock reading gets tabular figures.
+ */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+:where(button, a, select, input, textarea):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes debe-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin {
+  animation: debe-spin 0.7s linear infinite;
 }

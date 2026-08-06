@@ -22,9 +22,9 @@ import {
   CLOCK_SKEW_GRACE_MS,
   RESCHEDULE_LEAD_TIME_MS,
   SLOT_GRANULARITY_MINUTES,
-} from "./policy.js";
-import { formatInZone, toUtcIso, wallClockToUtc } from "./time.js";
-import type { LocalWallClock, TimeZoneId, UtcIsoString } from "./types.js";
+} from "./policy";
+import { formatInZone, toUtcIso, wallClockToUtc } from "./time";
+import type { LocalWallClock, TimeZoneId, UtcIsoString } from "./types";
 
 /** Why a slot cannot be picked. `null` means it can. */
 export type SlotBlockedReason = "past" | "lead-time" | "current-slot";

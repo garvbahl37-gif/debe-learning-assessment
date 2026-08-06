@@ -25,9 +25,9 @@ import {
   LEAD_TIME_LABEL,
   NOTE_MAX_LENGTH,
   RESCHEDULABLE_STATUSES,
-} from "./policy.js";
-import { isInPast, satisfiesLeadTime } from "./slots.js";
-import { isValidTimeZone, toUtcIso, TimeParseError } from "./time.js";
+} from "./policy";
+import { isInPast, satisfiesLeadTime } from "./slots";
+import { isValidTimeZone, toUtcIso, TimeParseError } from "./time";
 import {
   RESCHEDULE_REASONS,
   type RescheduleErrorCode,
@@ -35,7 +35,7 @@ import {
   type RescheduleRequest,
   type TutoringSession,
   type UtcIsoString,
-} from "./types.js";
+} from "./types";
 
 export type ValidationResult<T> =
   | { readonly ok: true; readonly value: T }

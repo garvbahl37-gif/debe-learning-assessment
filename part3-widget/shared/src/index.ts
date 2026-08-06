@@ -3,9 +3,9 @@
  * import. Nothing in here knows about React, Firebase, or HTTP.
  */
 
-export * from "./types.js";
-export * from "./policy.js";
-export * from "./time.js";
-export * from "./slots.js";
-export * from "./validateReschedule.js";
-export * from "./handler.js";
+export * from "./types";
+export * from "./policy";
+export * from "./time";
+export * from "./slots";
+export * from "./validateReschedule";
+export * from "./handler";

@@ -22,12 +22,12 @@
 import {
   parseRescheduleRequest,
   validateAgainstSession,
-} from "./validateReschedule.js";
+} from "./validateReschedule";
 import type {
   RescheduleRequest,
   RescheduleResponse,
   TutoringSession,
-} from "./types.js";
+} from "./types";
 
 /**
  * Storage, as the handler needs to see it.

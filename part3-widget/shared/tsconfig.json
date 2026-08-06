@@ -1,8 +1,21 @@
 {
+  // `bundler` resolution, and extensionless relative imports.
+  //
+  // The nodenext convention — writing `./time.js` for a file called `time.ts` —
+  // is correct for a package published to npm and consumed by Node directly.
+  // It is the wrong trade here: this package is consumed by Turbopack, by
+  // Vitest and by esbuild, all of which resolve like a bundler, and Turbopack
+  // only applies the .js→.ts mapping when the *importing* project is itself on
+  // nodenext resolution. Next's own tsconfig is not, and moving it there
+  // fights the framework.
+  //
+  // Extensionless imports work in all three, and the one consumer that needs
+  // real Node semantics — the deployed Cloud Function — goes through esbuild,
+  // which rewrites them.
   "compilerOptions": {
     "target": "ES2022",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "lib": ["ES2022"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
@@ -11,10 +24,10 @@
     "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
     "noEmit": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.json"]
 }
