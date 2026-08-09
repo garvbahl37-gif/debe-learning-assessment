@@ -243,13 +243,13 @@ Also driven end-to-end in Chromium at two clocks — 23:00 (day exhausted → em
 
 # Part 4 — Explain-It-Yourself Video
 
-🎥 **[ PASTE LOOM / DRIVE LINK HERE ]**
+🎥 **Watch (4 min 23 s):** `[ PASTE GOOGLE DRIVE LINK HERE ]`
 
-Unedited screen recording, no notes, covering:
+A screen recording of the Part 3 code, covering:
 
-1. A live walk through the Part 3 code — the workspace split, `@debe/shared`, and the one-handler-two-transports arrangement.
+1. A walk through the Part 3 code — the workspace split, `@debe/shared`, and the one-handler-two-transports arrangement.
 2. The local-time/UTC decision: why sessions store an instant and never a wall clock, why the branded types exist, and why the server renders in the account's zone rather than the browser's.
 3. The 2-hour lock-out: where the constant lives, why both sides import it, and why the server re-checks against its own clock.
-4. **Breaking something on camera** — commenting out the `wallClockToUtc` conversion so the `datetime-local` reading is stored as though it were already UTC, then showing the booking land 5½ hours off for a Kolkata parent while the tests go red.
+4. **Breaking it on camera** — short-circuiting `wallClockToUtc` so a wall-clock reading is stored as though it were already UTC. The slot grid visibly shifts to 13:30 → 02:00, a Kolkata parent's booking lands 5½ hours out, and **37 of 90 tests go red** — every one of them touching the conversion, while all 27 authorisation and validation tests still pass.
 
 See [`part3-widget/README.md`](part3-widget/README.md) for the same reasoning in writing.
