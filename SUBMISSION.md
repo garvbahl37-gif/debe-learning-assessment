@@ -2,12 +2,17 @@
 
 **Garv Bahl** · [github.com/garvbahl37-gif](https://github.com/garvbahl37-gif) · garvbahl37@gmail.com
 
+> **Repository** — https://github.com/garvbahl37-gif/debe-learning-assessment <br>
+> **Part 4 video** (4 min 23 s) — https://drive.google.com/file/d/1u5wg5JgzKdAphryLPQRQVM23YCOV-d6P/view?usp=sharing
+
 | Part | Where |
 |---|---|
 | 1 — Portfolio walkthrough | [below](#part-1--github-portfolio-walkthrough) |
 | 2 — Debugging round | [`part2-debug/`](part2-debug/) · [write-up](part2-debug/README.md) |
 | 3 — Reschedule widget | [`part3-widget/`](part3-widget/) · [write-up](part3-widget/README.md) |
 | 4 — Explain-it-yourself video | [link below](#part-4--explain-it-yourself-video) |
+
+<sub>Both links are written out in full above so this document stands on its own as a PDF.</sub>
 
 ---
 
