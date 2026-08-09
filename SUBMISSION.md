@@ -169,13 +169,13 @@ No Firebase project, no API keys, no `.env`.
 
 ![Local time shown, UTC stored](part3-widget/docs/screenshots/03-local-time-and-utc.png)
 
-*The local/UTC split made visible: `17:30 GMT-4` is what the parent picked, `2026-08-06T21:30:00.000Z` is what gets stored. Change the zone and the top line moves while `Stored as` holds.*
+*The local/UTC split made visible: the top line is the reading the parent picked in their own zone; `Stored as` underneath is the instant that gets written. Change the zone and the top line moves while `Stored as` holds.*
 
 <details>
-<summary>Request sent · dark mode · 390px</summary>
+<summary>Request sent · light mode · 390px</summary>
 
 ![Confirmation after a successful request](part3-widget/docs/screenshots/04-request-sent.png)
-![Dark mode](part3-widget/docs/screenshots/05-dark-mode.png)
+![Light mode](part3-widget/docs/screenshots/05-light-mode.png)
 ![Narrow viewport](part3-widget/docs/screenshots/06-mobile.png)
 
 </details>

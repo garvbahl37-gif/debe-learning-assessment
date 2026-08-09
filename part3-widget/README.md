@@ -24,16 +24,16 @@ No Firebase project, no API keys, no `.env`. `npm run verify` runs typecheck, li
 
 ![Local time shown, UTC stored](docs/screenshots/03-local-time-and-utc.png)
 
-*The whole local/UTC decision in one panel: `17:30 GMT-4` is what the parent picked, `2026-08-06T21:30:00.000Z` is what gets written. Change the zone dropdown and the top line moves while `Stored as` does not.*
+*The whole local/UTC decision in one panel. The top line is the reading the parent picked, in their own zone; **`Stored as`** underneath is the instant that actually gets written. Change the zone dropdown and the top line moves while `Stored as` does not.*
 
 <details>
-<summary>Request sent, dark mode, and narrow viewport</summary>
+<summary>Request sent, light mode, and narrow viewport</summary>
 
 ![Confirmation after a successful request](docs/screenshots/04-request-sent.png)
 
 *The session moves to `reschedule_requested`, not `confirmed` — a tutor has to agree before the slot is actually theirs.*
 
-![Dark mode](docs/screenshots/05-dark-mode.png)
+![Light mode](docs/screenshots/05-light-mode.png)
 
 *Note what is **not** here: the "your device is in another timezone" prompt. The browser reports `Asia/Calcutta` and the account says `Asia/Kolkata` — the same zone under a legacy IANA alias. Comparing the strings offered a parent in India the chance to switch from their timezone to their timezone; `zonesRenderIdentically()` compares offsets across the year instead.*
 
