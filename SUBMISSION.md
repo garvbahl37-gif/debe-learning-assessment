@@ -243,7 +243,7 @@ Also driven end-to-end in Chromium at two clocks — 23:00 (day exhausted → em
 
 # Part 4 — Explain-It-Yourself Video
 
-🎥 **Watch (4 min 23 s):** `[ PASTE GOOGLE DRIVE LINK HERE ]`
+🎥 **[Watch the walkthrough — 4 min 23 s](https://drive.google.com/file/d/1u5wg5JgzKdAphryLPQRQVM23YCOV-d6P/view?usp=sharing)**
 
 A screen recording of the Part 3 code, covering:
 
